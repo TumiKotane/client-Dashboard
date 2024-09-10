@@ -37,6 +37,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
          password,
       });
   if(response) {
+    await AsyncStorage.setItem('userEmail', response.data.email);
+    await AsyncStorage.setItem('userName', response.data.name);
+    await AsyncStorage.setItem('userRole', response.data.role);
+    await AsyncStorage.setItem('userUUID', response.data.uuid);
     navigation.navigate('Dashboard');
     console.log("Login Successful");
     console.log({response});
@@ -151,10 +155,10 @@ paddingHorizontal: 10,
 //       // Check if uuid or email exists to verify a successful login
 //       if (response.data.uuid || response.data.email) {
 //         // Optionally, store other user info like email, name, role
-//         await AsyncStorage.setItem('userEmail', response.data.email);
-//         await AsyncStorage.setItem('userName', response.data.name);
-//         await AsyncStorage.setItem('userRole', response.data.role);
-//         await AsyncStorage.setItem('userUUID', response.data.uuid);
+        // await AsyncStorage.setItem('userEmail', response.data.email);
+        // await AsyncStorage.setItem('userName', response.data.name);
+        // await AsyncStorage.setItem('userRole', response.data.role);
+        // await AsyncStorage.setItem('userUUID', response.data.uuid);
   
 //         console.log('Login successful');
 //         navigation.navigate('Dashboard');
