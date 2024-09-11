@@ -1,20 +1,22 @@
+import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, TextInput, FlatList, Alert, StyleSheet } from 'react-native';
 
 // Update the API URL with the new IP address
-const API_URL = 'http://localhost:5000/users' || null;
+const API_URL = 'http://localhost:5000/users';
 
 // Define a type for the user object
 interface User {
-  id: number;
+  uuid: number; // Change id to uuid
   name: string;
+  email: string; // Add email property
+  role: string; // Add role property
 }
-
 const UserScreen: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [userId, setUserId] = useState<string>('');
-  const [userName, setUserName] = useState<string>('');
-  const [newUserName, setNewUserName] = useState<string>('');
+  const [users, setUsers] = useState<User[]>([]); // State to store list of users
+  const [userId, setUserId] = useState<string>(''); // State to store user ID
+  const [userName, setUserName] = useState<string>(''); // State to store user name
+  const [newUserName, setNewUserName] = useState<string>(''); // State for new user name input
 
   // Fetch users once when the component mounts
   useEffect(() => {
@@ -24,14 +26,48 @@ const UserScreen: React.FC = () => {
   // Function to fetch all users
   const fetchUsers = async (): Promise<void> => {
     try {
-        console.log("Trying to get Users List")
-      const response = await fetch(API_URL, { credentials: 'include' });
-      const data: User[] = await response.json();
-      setUsers(data);
+      console.log("Trying to get Users List");
+      const response = await axios.get(API_URL); // Making a GET request to fetch users
+      const data: User[] = response.data; // Cast response data to the User array type
+      setUsers(data); // Update state with fetched users
+      console.log(data); // Debugging: log fetched data
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching users:', error); // Error handling for failed requests
     }
   };
+  // interface User {
+//   uuid: number; // Change id to uuid
+//   name: string;
+//   email: string; // Add email property
+//   role: string; // Add role property
+// }
+
+// const UserScreen: React.FC = () => {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [userId, setUserId] = useState<string>('');
+//   const [userName, setUserName] = useState<string>('');
+//   const [newUserName, setNewUserName] = useState<string>('');
+
+//   // Fetch users once when the component mounts
+//   useEffect(() => {
+//     fetchUsers();
+//   }, []);
+
+//   // Function to fetch all users
+//   const fetchUsers = async (): Promise<void> => {
+//     try {
+//         console.log("Trying to get Users List")
+//         const response = await axios.get(API_URL);
+//         console.log(response.data);
+//       // const response = await fetch(API_URL, { credentials: 'include' });
+//       const data: User[] = await response.data;
+//       setUsers(data);
+//       console.log(data);
+//       console.log(users);
+//     } catch (error) {
+//       console.error('Error fetching users:', error);
+//     }
+//   };
 
   // Function to fetch a user by ID
   const fetchUserById = async (): Promise<void> => {
@@ -118,7 +154,7 @@ const UserScreen: React.FC = () => {
       {/* List of users */}
       <FlatList
         data={users}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.uuid.toString()}
         renderItem={({ item }) => (
           <View style={styles.userItem}>
             <Text style={styles.userName}>{item.name}</Text>

@@ -45,7 +45,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
     if (response) {
     // Store token in AsyncStorage
-   //await AsyncStorage.setItem('userToken', token);
+   await AsyncStorage.setItem('userToken', token);
+        await AsyncStorage.setItem('userEmail', response.data.email);
+        await AsyncStorage.setItem('userName', response.data.name);
+        await AsyncStorage.setItem('userRole', response.data.role);
+        await AsyncStorage.setItem('userUUID', response.data.uuid);
    console.log(response)
 
     // Navigate to Dashboard

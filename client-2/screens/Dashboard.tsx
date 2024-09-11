@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; 
 import NavBar from '../components/NavBar'; // Adjust the path if needed
@@ -14,21 +14,32 @@ type RootStackParamList = {
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
-const getRole = async () => {
+const handleDashboard = async () => {
   const role = await AsyncStorage.getItem('userRole');
   console.log(role);
+  if ( role === 'Admin') {
+    const [userRole, setUserRole] = useState<string>('');
+    useEffect(() => {
+      setUserRole(role);
+    }, []);
+    console.log(role);
+  } else {
+    console.log('User');
+  }
+
 }
+
 const Dashboard: React.FC = () => {
 const navigation = useNavigation<DashboardNavigationProp>();
-getRole();
+handleDashboard();
 
   return (
     <View style={styles.container}>
       <NavBar navigation={navigation} />
       <SideBar navigation={navigation} />
       <View style={styles.mainContent}>
-        <Text style={styles.title}>Welcome!</Text>
-        <Text style={styles.subtitle}>Role:`${role}</Text>
+        <Text style={styles.title}>Welcome!</Text> ////edit dashboard text
+        <Text style={styles.subtitle}>Role:</Text>
         <Text style={styles.title}>Loading...</Text>
       </View>
     </View>
