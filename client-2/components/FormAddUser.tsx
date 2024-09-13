@@ -18,7 +18,7 @@ const FormAddUser: React.FC = () => {
   const saveUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/users", {
+      await axios.post("http://192.168.137.226:5000/users", { //change to localhost 
         name,
         email,
         password,

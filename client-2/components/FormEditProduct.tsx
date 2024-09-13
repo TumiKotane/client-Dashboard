@@ -19,7 +19,7 @@ const FormEditProduct: React.FC = () => {
     const getProductById = async () => {
       if (id) {
         try {
-          const response = await axios.get<Product>(`http://localhost:5000/products/${id}`);
+          const response = await axios.get<Product>(`http://192.168.137.226:5000/products/${id}`); //change to "localhost"
           setName(response.data.name);
           setPrice(response.data.price);
         } catch (error: any) {
@@ -36,7 +36,7 @@ const FormEditProduct: React.FC = () => {
     e.preventDefault();
     if (id) {
       try {
-        await axios.patch(`http://localhost:5000/products/${id}`, {
+        await axios.patch(`http://192.168.137.226:5000/products/${id}`, {
           name,
           price,
         });

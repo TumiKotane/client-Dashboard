@@ -11,7 +11,7 @@ const FormAddProduct: React.FC = () => { // React.FC is a generic type for funct
   const saveProduct = async (e: FormEvent<HTMLFormElement>) => { 
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/products", { 
+      await axios.post("http://192.168.137.226:5000/products", { //change to "localhost"
         name: name,
         price: price,
       });

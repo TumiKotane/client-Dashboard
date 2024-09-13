@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, TextInput, FlatList, Alert, StyleSheet } from 'react-native';
 
 // Update the API URL with the new IP address
-const API_URL = 'http://localhost:5000/users';
+const API_URL = 'http://localhost:5000/users'; //use either localhost:5000 or pc ip:192.168.137.226
 
 // Define a type for the user object
 interface User {

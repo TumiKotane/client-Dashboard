@@ -52,7 +52,7 @@ export const loginUser = createAsyncThunk<User, LoginUserPayload, { rejectValue:
     'user/loginUser',
     async (user, thunkAPI) => {
         try {
-            const response = await axios.post('http://192.168.137.226:5000/login', {
+            const response = await axios.post('http://localhost:5000/login', {
                 email: user.email,
                 password: user.password,
             });

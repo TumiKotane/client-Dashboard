@@ -23,7 +23,7 @@ const ProductList: React.FC = () => {
 
   const getProducts = async () => {
     try {
-      const response = await axios.get<Product[]>("http://localhost:5000/products");
+      const response = await axios.get<Product[]>("http://192.168.137.226:5000/products"); //192.168.137.226 -- change to localhost if bugging
       setProducts(response.data);
     } catch (error) {
       console.error("Failed to fetch products:", error);
@@ -32,7 +32,7 @@ const ProductList: React.FC = () => {
 
   const deleteProduct = async (productId: string) => {
     try {
-      await axios.delete(`http://localhost:5000/products/${productId}`);
+      await axios.delete(`http://192.168.137.226:5000/products/${productId}`);
       getProducts();
     } catch (error) {
       console.error("Failed to delete product:", error);

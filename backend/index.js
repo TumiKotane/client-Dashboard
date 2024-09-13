@@ -88,7 +88,7 @@ app.use(session({
 
 app.use(cors({
     credentials: true,
-    origin: '*',// frontend url (was port 5000) 'http://localhost:3000', 192.168.137.1
+    origin: 'http://localhost:5000',// frontend url (was port 5000) 'http://localhost:3000', 192.168.137.1
     //methods: "GET, PUT, POST"
 }));
 app.use(express.json());

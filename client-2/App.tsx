@@ -4,9 +4,9 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
-import Dashboard from './screens/Dashboard';
 import AddUser from './screens/AddUser';
 import Users from './screens/Users';
+import Dashboard from './screens/Dashboard';
 //import AddProduct from './screens/AddProductScreen';
 
 // import AddUser from './screens/AddUser';

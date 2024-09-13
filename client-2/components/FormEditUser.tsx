@@ -25,7 +25,7 @@ const FormEditUser: React.FC = () => {
     const getUserById = async () => {
       if (id) {
         try {
-          const response = await axios.get<User>(`http://localhost:5000/users/${id}`);
+          const response = await axios.get<User>(`http://192.168.137.226:5000/users/${id}`); //change to localhost if IP bugging
           setName(response.data.name);
           setEmail(response.data.email);
           setRole(response.data.role);
