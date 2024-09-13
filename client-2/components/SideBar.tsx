@@ -1,37 +1,48 @@
 import React from 'react';
 import { View, Button, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
 
-type RootStackParamList = {
-  UserList: undefined;
-  Dashboard: undefined;
-  Products: undefined;
-};
+// type RootStackParamList = {
+//   UserList: undefined;
+//   Dashboard: undefined;
+//   Products: undefined;
+// };
 
-type SideBarProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
-};
+// type SideBarProps = {
+//   navigation: NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
+// };
 
-const SideBar: React.FC<SideBarProps> = ({ navigation }) => {
+const SideBar: React.FC = () => {
+  const navigation = useNavigation(); // Get navigation object
   return (
     <View style={styles.sidebar}>
       <View style={styles.buttonContainer}>
         <View style={styles.buttonWrapper}>
           <Button
             title="Users"
-            onPress={() => navigation.navigate('UserList')}
+            onPress={() => {
+              console.log('Navigating to UserList');
+              navigation.navigate('UserList' as never);
+            }}
           />
         </View>
         <View style={styles.buttonWrapper}>
           <Button
             title="Dashboard"
-            onPress={() => navigation.navigate('Dashboard')}
+            onPress={() => {
+              console.log('Navigating to Dashboard');
+              navigation.navigate('Dashboard' as never);
+            }}
           />
         </View>
         <View style={styles.buttonWrapper}>
           <Button
             title="Products"
-            onPress={() => navigation.navigate('Products')}
+            onPress={() => {
+              console.log('Navigating to Products');
+              navigation.navigate('Products' as never);
+            }}
           />
         </View>
       </View>

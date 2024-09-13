@@ -1,17 +1,19 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TextInput, FlatList, Alert, StyleSheet } from 'react-native';
+import { View, Text, Button, TextInput, FlatList, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome'; // For icons
 
-// Update the API URL with the new IP address
-const API_URL = 'http://localhost:5000/users'; //use either localhost:5000 or pc ip:192.168.137.226
+// Update the API URL with the correct IP address or localhost
+const API_URL = 'http://localhost:5000/users'; // Use IP if running on device
 
 // Define a type for the user object
 interface User {
-  uuid: number; // Change id to uuid
+  uuid: number;
   name: string;
-  email: string; // Add email property
-  role: string; // Add role property
+  email: string;
+  role: string;
 }
+
 const UserScreen: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]); // State to store list of users
   const [userId, setUserId] = useState<string>(''); // State to store user ID
@@ -26,48 +28,13 @@ const UserScreen: React.FC = () => {
   // Function to fetch all users
   const fetchUsers = async (): Promise<void> => {
     try {
-      console.log("Trying to get Users List");
-      const response = await axios.get(API_URL); // Making a GET request to fetch users
-      const data: User[] = response.data; // Cast response data to the User array type
+      const response = await axios.get(API_URL);
+      const data: User[] = response.data;
       setUsers(data); // Update state with fetched users
-      console.log(data); // Debugging: log fetched data
     } catch (error) {
-      console.error('Error fetching users:', error); // Error handling for failed requests
+      console.error('Error fetching users:', error);
     }
   };
-  // interface User {
-//   uuid: number; // Change id to uuid
-//   name: string;
-//   email: string; // Add email property
-//   role: string; // Add role property
-// }
-
-// const UserScreen: React.FC = () => {
-//   const [users, setUsers] = useState<User[]>([]);
-//   const [userId, setUserId] = useState<string>('');
-//   const [userName, setUserName] = useState<string>('');
-//   const [newUserName, setNewUserName] = useState<string>('');
-
-//   // Fetch users once when the component mounts
-//   useEffect(() => {
-//     fetchUsers();
-//   }, []);
-
-//   // Function to fetch all users
-//   const fetchUsers = async (): Promise<void> => {
-//     try {
-//         console.log("Trying to get Users List")
-//         const response = await axios.get(API_URL);
-//         console.log(response.data);
-//       // const response = await fetch(API_URL, { credentials: 'include' });
-//       const data: User[] = await response.data;
-//       setUsers(data);
-//       console.log(data);
-//       console.log(users);
-//     } catch (error) {
-//       console.error('Error fetching users:', error);
-//     }
-//   };
 
   // Function to fetch a user by ID
   const fetchUserById = async (): Promise<void> => {
@@ -76,15 +43,13 @@ const UserScreen: React.FC = () => {
       return;
     }
     try {
-      const response = await fetch(`${API_URL}/${userId}`, { credentials: 'include' });
-      const data = await response.json();
-      if (data.name) {
-        setUserName(data.name); // Assuming user object has a 'name' property
-      } else {
-        Alert.alert('Error', 'User not found.');
-      }
+      const response = await axios.get(`${API_URL}/${userId}`);
+      const data = response.data;
+      console.log('response.data', response.data)
+      setUserName(data.name); // Assuming user object has a 'name' property
     } catch (error) {
       console.error('Error fetching user by ID:', error);
+      Alert.alert('Error', 'User not found.');
     }
   };
 
@@ -95,90 +60,87 @@ const UserScreen: React.FC = () => {
       return;
     }
     try {
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newUserName }),
-        credentials: 'include',
-      });
+      await axios.post(API_URL, { name: newUserName });
       setNewUserName('');
-      fetchUsers();
+      fetchUsers(); // Refresh the users list after creating
     } catch (error) {
       console.error('Error creating user:', error);
     }
   };
 
   // Function to update an existing user's name
-  const updateUser = async (): Promise<void> => {
-    if (!userId || !userName) {
+  const updateUser = async (id: string, updatedName: string): Promise<void> => {
+    if (!id || !updatedName) {
       Alert.alert('Error', 'Please enter valid User ID and name.');
       return;
     }
     try {
-      await fetch(`${API_URL}/${userId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: userName }),
-        credentials: 'include',
-      });
+      await axios.patch(`${API_URL}/${id}`, { name: updatedName });
       setUserId('');
       setUserName('');
-      fetchUsers();
+      fetchUsers(); // Refresh the users list after updating
     } catch (error) {
       console.error('Error updating user:', error);
     }
   };
 
   // Function to delete a user
-  const deleteUser = async (): Promise<void> => {
-    if (!userId) {
-      Alert.alert('Error', 'Please enter a valid User ID.');
-      return;
-    }
+  const deleteUser = async (id: string): Promise<void> => {
     try {
-      await fetch(`${API_URL}/${userId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      setUserId('');
-      fetchUsers();
+      await axios.delete(`${API_URL}/${id}`);
+      fetchUsers(); // Refresh the users list after deleting
     } catch (error) {
       console.error('Error deleting user:', error);
     }
   };
 
+  // Render each user in a table row
+  const renderUser = ({ item }: { item: User }) => (
+    <View style={styles.tableRow}>
+      <Text style={styles.tableCell}>{item.uuid}</Text>
+      <Text style={styles.tableCell}>{item.name}</Text>
+      <Text style={styles.tableCell}>{item.email}</Text>
+      <Text style={styles.tableCell}>{item.role}</Text>
+      <View style={styles.tableCellActions}>
+        <TouchableOpacity onPress={() => setUserName(item.name)}>
+          <Icon name="edit" size={20} color="blue" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => deleteUser(item.uuid.toString())}>
+          <Icon name="trash" size={20} color="red" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Users List:</Text>
-      
+
+      {/* Table Header */}
+      <View style={styles.tableHeader}>
+        <Text style={styles.tableHeaderCell}>UUID</Text>
+        <Text style={styles.tableHeaderCell}>Name</Text>
+        <Text style={styles.tableHeaderCell}>Email</Text>
+        <Text style={styles.tableHeaderCell}>Role</Text>
+        <Text style={styles.tableHeaderCell}>Actions</Text>
+      </View>
+
       {/* List of users */}
       <FlatList
         data={users}
         keyExtractor={(item) => item.uuid.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.userItem}>
-            <Text style={styles.userName}>{item.name}</Text>
-          </View>
-        )}
+        renderItem={renderUser}
         ListEmptyComponent={<Text>No users found</Text>}
       />
 
-      {/* Input for fetching, creating, and updating users */}
-      <TextInput
-        placeholder="Enter User ID"
-        value={userId}
-        onChangeText={setUserId}
-        style={styles.input}
-      />
-      <Button title="Fetch User" onPress={fetchUserById} />
-
+      {/* Input for creating and updating users */}
       <TextInput
         placeholder="Enter New User Name"
         value={newUserName}
         onChangeText={setNewUserName}
         style={styles.input}
       />
-      <Button title="Create User" onPress={createUser} />
+      <Button title="Add User" onPress={createUser} />
 
       <TextInput
         placeholder="Update User Name"
@@ -186,9 +148,7 @@ const UserScreen: React.FC = () => {
         onChangeText={setUserName}
         style={styles.input}
       />
-      <Button title="Update User" onPress={updateUser} />
-
-      <Button title="Delete User" onPress={deleteUser} />
+      <Button title="Update User" onPress={() => updateUser(userId, userName)} />
     </View>
   );
 };
@@ -203,21 +163,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  userItem: {
-    padding: 10,
+  tableHeader: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#000',
+    paddingVertical: 10,
+  },
+  tableHeaderCell: {
+    flex: 1,
+    fontWeight: 'bold',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderColor: '#ccc',
-    marginVertical: 5,
   },
-  userName: {
-    fontSize: 18,
+  tableCell: {
+    flex: 1,
+  },
+  tableCellActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flex: 1,
   },
   input: {
-    borderBottomWidth: 1,
+    borderWidth: 1,
     borderColor: '#ccc',
     marginBottom: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    padding: 10,
   },
 });
 

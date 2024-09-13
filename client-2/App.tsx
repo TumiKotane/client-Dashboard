@@ -5,8 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import AddUser from './screens/AddUser';
-import Users from './screens/Users';
 import Dashboard from './screens/Dashboard';
+import UserScreen from './screens/Users';
 //import AddProduct from './screens/AddProductScreen';
 
 // import AddUser from './screens/AddUser';
@@ -32,7 +32,7 @@ export default function App(): JSX.Element {
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="AddUser" component={AddUser} />
-          <Stack.Screen name="UserList" component={Users} />
+          <Stack.Screen name="UserList" component={UserScreen} />
           <Stack.Screen name="Dashboard" component={Dashboard} />
           {/* <Stack.Screen name="Products" component={ProductScreen} />
           <Stack.Screen name="AddProduct" component={AddProductScreen} /> */}
