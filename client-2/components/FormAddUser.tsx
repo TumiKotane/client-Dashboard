@@ -1,32 +1,30 @@
-import React, { useState, FormEvent } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-//import React from "react";
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity, Picker } from 'react-native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native'; // React Navigation for mobile
 
-// Define the functional component with React.FC type
 const FormAddUser: React.FC = () => {
-  // Use type annotations for state variables
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confPassword, setConfPassword] = useState<string>("");
-  const [role, setRole] = useState<string>("");
-  const [msg, setMsg] = useState<string>("");
-  const navigate = useNavigate();
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confPassword, setConfPassword] = useState<string>('');
+  const [role, setRole] = useState<string>('user'); // Default role as 'user'
+  const [msg, setMsg] = useState<string>('');
 
-  // Use FormEvent<HTMLFormElement> to type the event parameter
-  const saveUser = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const navigation = useNavigation();
+
+  const saveUser = async () => {
     try {
-      await axios.post("http://192.168.137.226:5000/users", { //change to localhost 
+      await axios.post('http://192.168.100.6:5000/users', {
         name,
         email,
         password,
         confPassword,
         role,
       });
-      navigate("/users");
-    } catch (error: any) { // Use 'any' for error type
+      Alert.alert('Success', 'User added successfully');
+      navigation.navigate('UserList'); // Navigate to the UsersList screen after saving
+    } catch (error: any) {
       if (error.response) {
         setMsg(error.response.data.msg);
       }
@@ -34,97 +32,122 @@ const FormAddUser: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1 className="title">Users</h1>
-      <h2 className="subtitle">Add New User</h2>
-      <div className="card is-shadowless">
-        <div className="card-content">
-          <div className="content">
-            <form onSubmit={saveUser}>
-              <p className="has-text-centered">{msg}</p>
-              <div className="field">
-                <label className="label">Name</label>
-                <div className="control">
-                  <input
-                    type="text"
-                    className="input"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Name"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">Email</label>
-                <div className="control">
-                  <input
-                    type="text"
-                    className="input"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">Password</label>
-                <div className="control">
-                  <input
-                    type="password"
-                    className="input"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="******"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">Confirm Password</label>
-                <div className="control">
-                  <input
-                    type="password"
-                    className="input"
-                    value={confPassword}
-                    onChange={(e) => setConfPassword(e.target.value)}
-                    placeholder="******"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">Role</label>
-                <div className="control">
-                  <div className="select is-fullwidth">
-                  {/* <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                    >
-                      <option value="admin">Admin</option>
-                      <option value="user">User</option>
-                    </select> */}
-                    <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      title="Role"
-                    >
-                      <option value="admin">Admin</option>
-                      <option value="user">User</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="field">
-                <div className="control">
-                  <button type="submit" className="button is-success">
-                    Save
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+    <View style={styles.container}>
+      <Text style={styles.title}>Add New User</Text>
+
+      {msg ? <Text style={styles.errorMessage}>{msg}</Text> : null}
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Name</Text>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Name"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          placeholder="******"
+          secureTextEntry
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Confirm Password</Text>
+        <TextInput
+          style={styles.input}
+          value={confPassword}
+          onChangeText={setConfPassword}
+          placeholder="******"
+          secureTextEntry
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Role</Text>
+        <Picker
+          selectedValue={role}
+          style={styles.picker}
+          onValueChange={(itemValue) => setRole(itemValue)}
+        >
+          <Picker.Item label="Admin" value="admin" />
+          <Picker.Item label="User" value="user" />
+        </Picker>
+      </View>
+
+      <TouchableOpacity style={styles.button} onPress={saveUser}>
+        <Text style={styles.buttonText}>Save</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    marginBottom: 15,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  input: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  picker: {
+    height: 40,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  errorMessage: {
+    color: 'red',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+});
 
 export default FormAddUser;

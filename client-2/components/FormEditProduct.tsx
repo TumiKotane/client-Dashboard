@@ -1,25 +1,28 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import axios from 'axios';
+import { useNavigation, useRoute } from '@react-navigation/native'; // React Navigation for mobile
 
-// Define a type for the product data
+// Define an interface for product data
 interface Product {
   name: string;
   price: string;
 }
 
 const FormEditProduct: React.FC = () => {
-  const [name, setName] = useState<string>("");
-  const [price, setPrice] = useState<string>("");
-  const [msg, setMsg] = useState<string>("");
-  const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>(); // Type the id parameter
+  const [name, setName] = useState<string>('');
+  const [price, setPrice] = useState<string>('');
+  const [msg, setMsg] = useState<string>('');
+
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { id } = route.params as { id: string }; // Extract id from route params
 
   useEffect(() => {
     const getProductById = async () => {
       if (id) {
         try {
-          const response = await axios.get<Product>(`http://192.168.137.226:5000/products/${id}`); //change to "localhost"
+          const response = await axios.get<Product>(`http://192.168.100.6:5000/products/${id}`); // Update URL if necessary
           setName(response.data.name);
           setPrice(response.data.price);
         } catch (error: any) {
@@ -32,15 +35,14 @@ const FormEditProduct: React.FC = () => {
     getProductById();
   }, [id]);
 
-  const updateProduct = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const updateProduct = async () => {
     if (id) {
       try {
-        await axios.patch(`http://192.168.137.226:5000/products/${id}`, {
+        await axios.patch(`http://192.168.100.6:5000/products/${id}`, {
           name,
           price,
         });
-        navigate("/products");
+        navigation.navigate('ProductList'); // Navigate to the ProductList screen
       } catch (error: any) {
         if (error.response) {
           setMsg(error.response.data.msg);
@@ -49,63 +51,80 @@ const FormEditProduct: React.FC = () => {
     }
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name === "name") {
-      setName(value);
-    } else if (name === "price") {
-      setPrice(value);
-    }
-  };
-
   return (
-    <div>
-      <h1 className="title">Products</h1>
-      <h2 className="subtitle">Edit Product</h2>
-      <div className="card is-shadowless">
-        <div className="card-content">
-          <div className="content">
-            <form onSubmit={updateProduct}>
-              <p className="has-text-centered">{msg}</p>
-              <div className="field">
-                <label className="label">Name</label>
-                <div className="control">
-                  <input
-                    type="text"
-                    className="input"
-                    name="name"
-                    value={name}
-                    onChange={handleChange}
-                    placeholder="Product Name"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">Price</label>
-                <div className="control">
-                  <input
-                    type="text"
-                    className="input"
-                    name="price"
-                    value={price}
-                    onChange={handleChange}
-                    placeholder="Price"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <div className="control">
-                  <button type="submit" className="button is-success">
-                    Update
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+    <View style={styles.container}>
+      <Text style={styles.title}>Edit Product</Text>
+      {msg ? <Text style={styles.errorMessage}>{msg}</Text> : null}
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Name</Text>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Product Name"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Price</Text>
+        <TextInput
+          style={styles.input}
+          value={price}
+          onChangeText={setPrice}
+          placeholder="Price"
+          keyboardType="numeric"
+        />
+      </View>
+
+      <TouchableOpacity style={styles.button} onPress={updateProduct}>
+        <Text style={styles.buttonText}>Update</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  inputContainer: {
+    marginBottom: 15,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  input: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  errorMessage: {
+    color: 'red',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+});
 
 export default FormEditProduct;

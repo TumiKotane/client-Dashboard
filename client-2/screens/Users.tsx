@@ -4,7 +4,7 @@ import { View, Text, Button, TextInput, FlatList, Alert, StyleSheet, TouchableOp
 import Icon from 'react-native-vector-icons/FontAwesome'; // For icons
 
 // Update the API URL with the correct IP address or localhost
-const API_URL = 'http://localhost:5000/users'; // Use IP if running on device
+const API_URL = 'http://192.168.100.6:5000/users'; // Use IP if running on device
 
 // Define a type for the user object
 interface User {

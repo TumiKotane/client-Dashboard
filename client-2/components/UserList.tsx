@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { View, Text, Button, TouchableOpacity, FlatList } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // react-navigation for navigation
+import { View, Text, Button, TouchableOpacity, FlatList, StyleSheet, Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native"; // React Navigation for navigation
 
+// User interface
 interface User {
   uuid: string;
   name: string;
@@ -11,50 +12,63 @@ interface User {
 }
 
 const Userlist: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const navigation = useNavigation(); // For navigation
+  const [users, setUsers] = useState<User[]>([]); // State to hold users
+  const navigation = useNavigation(); // React Navigation hook for navigation
 
+  // Fetch users on component mount
   useEffect(() => {
     getUsers();
   }, []);
 
+  // Function to fetch users from API
   const getUsers = async () => {
     try {
-      const response = await axios.get<User[]>("http://192.168.137.226:5000/users");
+      const response = await axios.get<User[]>("http://192.168.100.6:5000/users");
       setUsers(response.data);
     } catch (error) {
       console.error("Failed to fetch users", error);
+      Alert.alert("Error", "Failed to fetch users.");
     }
   };
 
+  // Function to delete a user
   const deleteUser = async (userId: string) => {
     try {
-      await axios.delete(`http://192.168.137.226:5000/users/${userId}`);
-      getUsers();
+      await axios.delete(`http://192.168.100.6:5000/users/${userId}`);
+      Alert.alert("Success", "User deleted successfully.");
+      getUsers(); // Refresh users list after deletion
     } catch (error) {
       console.error("Failed to delete user", error);
+      Alert.alert("Error", "Failed to delete user.");
     }
   };
 
   return (
-    <View>
-      <Text style={{ fontSize: 24 }}>Users</Text>
-      <Text style={{ fontSize: 18 }}>List of Users</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Users</Text>
       <Button title="Add New" onPress={() => navigation.navigate("AddUser")} />
+
       <FlatList
         data={users}
         keyExtractor={(user) => user.uuid}
         renderItem={({ item, index }) => (
-          <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 10 }}>
-            <Text>{index + 1}. {item.name}</Text>
-            <Text>{item.email}</Text>
-            <Text>{item.role}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("EditUser", { userId: item.uuid })}>
-              <Text style={{ color: "blue" }}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => deleteUser(item.uuid)}>
-              <Text style={{ color: "red" }}>Delete</Text>
-            </TouchableOpacity>
+          <View style={styles.userItem}>
+            <View style={styles.userDetails}>
+              <Text>{index + 1}. {item.name}</Text>
+              <Text>{item.email}</Text>
+              <Text>{item.role}</Text>
+            </View>
+
+            <View style={styles.userActions}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("EditUser", { userId: item.uuid })}
+              >
+                <Text style={styles.editText}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => deleteUser(item.uuid)}>
+                <Text style={styles.deleteText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
@@ -63,6 +77,44 @@ const Userlist: React.FC = () => {
 };
 
 export default Userlist;
+
+// Define styles for the component
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#f5f5f5",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  userItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    marginVertical: 5,
+  },
+  userDetails: {
+    flex: 1,
+  },
+  userActions: {
+    flexDirection: "row",
+  },
+  editText: {
+    color: "blue",
+    marginRight: 15,
+  },
+  deleteText: {
+    color: "red",
+  },
+});
+
 // import React, { useState, useEffect } from "react";
 // import axios from "axios";
 // import { Link } from "react-router-dom";

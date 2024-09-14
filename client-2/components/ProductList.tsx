@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { View, Text, TouchableOpacity, FlatList, Alert, Button, StyleSheet } from "react-native";
+import { useNavigation } from '@react-navigation/native'; // React Navigation
 import axios from "axios";
 
 // Define types for your product and user
@@ -16,6 +17,7 @@ interface Product {
 
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const navigation = useNavigation(); // Navigation object from React Navigation
 
   useEffect(() => {
     getProducts();
@@ -23,66 +25,100 @@ const ProductList: React.FC = () => {
 
   const getProducts = async () => {
     try {
-      const response = await axios.get<Product[]>("http://192.168.137.226:5000/products"); //192.168.137.226 -- change to localhost if bugging
+      const response = await axios.get<Product[]>("http://192.168.100.6:5000/products"); // Update with your server IP/endpoint
       setProducts(response.data);
     } catch (error) {
       console.error("Failed to fetch products:", error);
+      Alert.alert("Error", "Failed to fetch products");
     }
   };
 
   const deleteProduct = async (productId: string) => {
     try {
-      await axios.delete(`http://192.168.137.226:5000/products/${productId}`);
+      await axios.delete(`http://192.168.100.6:5000/products/${productId}`);
       getProducts();
     } catch (error) {
       console.error("Failed to delete product:", error);
+      Alert.alert("Error", "Failed to delete product");
     }
   };
 
+  const renderProduct = ({ item, index }: { item: Product; index: number }) => (
+    <View style={styles.productRow}>
+      <Text style={styles.text}>{index + 1}. {item.name}</Text>
+      <Text style={styles.text}>Price: {item.price}</Text>
+      <Text style={styles.text}>Created by: {item.user.name}</Text>
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.navigate('EditProduct', { productId: item.uuid })}
+        >
+          <Text style={styles.buttonText}>Edit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => deleteProduct(item.uuid)}
+        >
+          <Text style={styles.buttonText}>Delete</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
-    <div>
-      <h1 className="title">Products</h1>
-      <h2 className="subtitle">List of Products</h2>
-      <Link to="/products/add" className="button is-primary mb-2">
-        Add New
-      </Link>
-      <table className="table is-striped is-fullwidth">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Product Name</th>
-            <th>Price</th>
-            <th>Created By</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product, index) => (
-            <tr key={product.uuid}>
-              <td>{index + 1}</td>
-              <td>{product.name}</td>
-              <td>{product.price}</td>
-              <td>{product.user.name}</td>
-              <td>
-                <Link
-                  to={`/products/edit/${product.uuid}`}
-                  className="button is-small is-info"
-                >
-                  Edit
-                </Link>
-                <button
-                  onClick={() => deleteProduct(product.uuid)}
-                  className="button is-small is-danger"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <View style={styles.container}>
+      <Text style={styles.title}>Products</Text>
+      <Button title="Add New" onPress={() => navigation.navigate('AddProduct')} />
+      <FlatList
+        data={products}
+        keyExtractor={(item) => item.uuid}
+        renderItem={renderProduct}
+      />
+    </View>
   );
 };
+
+// Define styles for the component
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  productRow: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 10,
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  editButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+});
 
 export default ProductList;

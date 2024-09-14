@@ -1,81 +1,119 @@
-import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { LoginUser, reset } from "../redux/authSlice";
-import { RootState } from "../redux/store"; // Import RootState from your store setup
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native'; // React Navigation for mobile
+import { LoginUser, reset } from '../redux/authSlice'; // Adjust the import path as needed
+import { RootState } from '../redux/store'; // Import RootState from your store setup
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
-  // Type the state returned by useSelector
   const { user, isError, isSuccess, isLoading, message } = useSelector(
     (state: RootState) => state.auth
   );
 
   useEffect(() => {
     if (user || isSuccess) {
-      navigate("/dashboard");
+      navigation.navigate('Dashboard'); // Navigate to the dashboard if login is successful
     }
     dispatch(reset());
-  }, [user, isSuccess, dispatch, navigate]);
+  }, [user, isSuccess, dispatch, navigation]);
 
-  const Auth = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const Auth = () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
     dispatch(LoginUser({ email, password }));
   };
 
   return (
-    <section className="hero is-fullheight is-fullwidth">
-      <div className="hero-body">
-        <div className="container">
-          <div className="columns is-centered">
-            <div className="column is-4">
-              <form onSubmit={Auth} className="box">
-                {isError && <p className="has-text-centered">{message}</p>}
-                <h1 className="title is-2">Sign In</h1>
-                <div className="field">
-                  <label className="label">Email</label>
-                  <div className="control">
-                    <input
-                      type="text"
-                      className="input"
-                      value={email}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                      placeholder="Email"
-                    />
-                  </div>
-                </div>
-                <div className="field">
-                  <label className="label">Password</label>
-                  <div className="control">
-                    <input
-                      type="password"
-                      className="input"
-                      value={password}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                      placeholder="******"
-                    />
-                  </div>
-                </div>
-                <div className="field mt-5">
-                  <button
-                    type="submit"
-                    className="button is-success is-fullwidth"
-                  >
-                    {isLoading ? "Loading..." : "Login"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <View style={styles.container}>
+      {isError && <Text style={styles.errorMessage}>{message}</Text>}
+      <Text style={styles.title}>Sign In</Text>
+      
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          placeholder="Email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          placeholder="******"
+          secureTextEntry
+        />
+      </View>
+
+      <TouchableOpacity style={styles.button} onPress={Auth}>
+        {isLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Login</Text>
+        )}
+      </TouchableOpacity>
+    </View>
   );
 };
+
+// Define styles for the login screen
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    marginBottom: 15,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  input: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  errorMessage: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+});
 
 export default Login;

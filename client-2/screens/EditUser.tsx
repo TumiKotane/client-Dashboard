@@ -2,15 +2,14 @@ import React, { useEffect } from 'react';
 import Layout from './Layout';
 import FormEditUser from '../components/FormEditUser';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigation } from '@react-navigation/native'; // For React Native navigation
 import { AppDispatch, RootState } from '../redux/store'; // Import types from your store
 import { getMe } from '../redux/authSlice';
 
-// Define the component as a functional component with no props
 const EditUser: React.FC = () => {
   // Typed useDispatch hook
   const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
+  const navigation = useNavigation(); // For navigation
 
   // Typed useSelector hook
   const { isError, user } = useSelector((state: RootState) => state.auth);
@@ -21,12 +20,12 @@ const EditUser: React.FC = () => {
 
   useEffect(() => {
     if (isError) {
-      navigate('/');
+      navigation.navigate('Home'); // Replace '/' with relevant screen name
     }
     if (user && user.role !== 'admin') {
-      navigate('/dashboard');
+      navigation.navigate('Dashboard'); // Replace with your target screen name
     }
-  }, [isError, user, navigate]);
+  }, [isError, user, navigation]);
 
   return (
     <Layout>

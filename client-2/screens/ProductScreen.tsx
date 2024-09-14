@@ -57,7 +57,7 @@ const Userlist: React.FC = () => {
 
   const getUsers = async () => {
     try {
-      const response = await axios.get<User[]>("http://192.168.137.80:5000/users");
+      const response = await axios.get<User[]>("http://192.168.100.6:5000/users");
       setUsers(response.data);
     } catch (error) {
       console.error("Failed to fetch users", error);
@@ -66,7 +66,7 @@ const Userlist: React.FC = () => {
 
   const deleteUser = async (userId: string) => {
     try {
-      await axios.delete(`http://192.168.137.80:5000/users/${userId}`);
+      await axios.delete(`http://192.168.100.6:5000/users/${userId}`);
       getUsers();
     } catch (error) {
       console.error("Failed to delete user", error);

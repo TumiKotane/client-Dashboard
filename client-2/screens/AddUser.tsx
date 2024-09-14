@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { Alert } from 'react-native';
+import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux'; // Redux
 import { useNavigation, NavigationProp } from '@react-navigation/native'; // React Navigation for navigation
 import { getMe } from '../redux/authSlice'; // Import your Redux slice
-//import Layout from '../screens/Layout'; // Assuming you have a Layout component
+import Layout from '../screens/Layout'; // Assuming you have a Layout component for mobile
 import FormAddUser from '../components/FormAddUser'; // Form component to add a user
 import { RootState } from '../redux/store'; // Import RootState type from your Redux store
 
@@ -29,9 +29,20 @@ const AddUser: React.FC = () => {
 
   return (
     <Layout>
-      <FormAddUser />
+      <ScrollView contentContainerStyle={styles.container}>
+        <FormAddUser />
+      </ScrollView>
     </Layout>
   );
 };
+
+// Styling for the container
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#f5f5f5', // Light background color
+  },
+});
 
 export default AddUser;
