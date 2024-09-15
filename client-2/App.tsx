@@ -1,6 +1,6 @@
 import * as React from 'react';
-// import { Provider } from 'react-redux';
-// import store from './redux/store';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
@@ -27,7 +27,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App(): JSX.Element {
   return (
-    // <Provider store={store}> 
+    <Provider store={store}> 
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={LoginScreen} />
@@ -38,6 +38,7 @@ export default function App(): JSX.Element {
           <Stack.Screen name="AddProduct" component={AddProductScreen} /> */}
         </Stack.Navigator>
       </NavigationContainer>
+      </Provider>
 
   );
 }
