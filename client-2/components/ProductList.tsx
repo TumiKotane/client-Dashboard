@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, FlatList, Alert, Button, StyleSheet } fro
 import { useNavigation } from '@react-navigation/native'; // React Navigation
 import axios from "axios";
 
+
 // Define types for your product and user
 interface User {
   name: string;
@@ -30,16 +31,6 @@ const ProductList: React.FC = () => {
     } catch (error) {
       console.error("Failed to fetch products:", error);
       Alert.alert("Error", "Failed to fetch products");
-    }
-  };
-
-  const deleteProduct = async (productId: string) => {
-    try {
-      await axios.delete(`http://192.168.100.6:5000/products/${productId}`);
-      getProducts();
-    } catch (error) {
-      console.error("Failed to delete product:", error);
-      Alert.alert("Error", "Failed to delete product");
     }
   };
 

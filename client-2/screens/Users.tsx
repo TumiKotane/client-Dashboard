@@ -1,12 +1,10 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, TextInput, FlatList, Alert, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // For icons
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-// Update the API URL with the correct IP address or localhost
-const API_URL = 'http://192.168.100.6:5000/users'; // Use IP if running on device
+const API_URL = 'http://192.168.100.6:5000/users';
 
-// Define a type for the user object
 interface User {
   uuid: number;
   name: string;
@@ -15,28 +13,24 @@ interface User {
 }
 
 const UserScreen: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]); // State to store list of users
-  const [userId, setUserId] = useState<number>(); // State to store user ID
-  const [userName, setUserName] = useState<string>(''); // State to store user name
-  const [newUserName, setNewUserName] = useState<string>(''); // State for new user name input
+  const [users, setUsers] = useState<User[]>([]);
+  const [userId, setUserId] = useState<number | undefined>(undefined);
+  const [userName, setUserName] = useState<string>('');
+  const [newUserName, setNewUserName] = useState<string>('');
 
-  // Fetch users once when the component mounts
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // Function to fetch all users
   const fetchUsers = async (): Promise<void> => {
     try {
-      const response = await axios.get(API_URL, {withCredentials: true}); //fix this error
-      const data: User[] = response.data;
-      setUsers(data); // Update state with fetched users
+      const response = await axios.get(API_URL, { withCredentials: true });
+      setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
   };
 
-  // Function to fetch a user by ID
   const fetchUserById = async (): Promise<void> => {
     if (!userId) {
       Alert.alert('Error', 'Please enter a valid User ID.');
@@ -44,16 +38,13 @@ const UserScreen: React.FC = () => {
     }
     try {
       const response = await axios.get(`${API_URL}/${userId}`);
-      const data = response.data;
-      console.log('response.data', response.data)
-      setUserName(data.name); // Assuming user object has a 'name' property
+      setUserName(response.data.name);
     } catch (error) {
       console.error('Error fetching user by ID:', error);
       Alert.alert('Error', 'User not found.');
     }
   };
 
-  // Function to create a new user
   const createUser = async (): Promise<void> => {
     if (!newUserName) {
       Alert.alert('Error', 'Please enter a valid name.');
@@ -62,14 +53,13 @@ const UserScreen: React.FC = () => {
     try {
       await axios.post(API_URL, { name: newUserName });
       setNewUserName('');
-      fetchUsers(); // Refresh the users list after creating
+      fetchUsers();
     } catch (error) {
       console.error('Error creating user:', error);
     }
   };
 
-  // Function to update an existing user's name
-  const updateUser = async (id: string, updatedName: string): Promise<void> => {
+  const updateUser = async (id: number, updatedName: string): Promise<void> => {
     if (!id || !updatedName) {
       Alert.alert('Error', 'Please enter valid User ID and name.');
       return;
@@ -78,23 +68,21 @@ const UserScreen: React.FC = () => {
       await axios.patch(`${API_URL}/${id}`, { name: updatedName });
       setUserId(undefined);
       setUserName('');
-      fetchUsers(); // Refresh the users list after updating
+      fetchUsers();
     } catch (error) {
       console.error('Error updating user:', error);
     }
   };
 
-  // Function to delete a user
-  const deleteUser = async (id: string): Promise<void> => {
+  const deleteUser = async (id: number): Promise<void> => {
     try {
       await axios.delete(`${API_URL}/${id}`);
-      fetchUsers(); // Refresh the users list after deleting
+      fetchUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
     }
   };
 
-  // Render each user in a row
   const renderUser = ({ item }: { item: User }) => (
     <View style={styles.tableRow}>
       <Text style={styles.tableCell}>{item.uuid}</Text>
@@ -102,8 +90,11 @@ const UserScreen: React.FC = () => {
       <Text style={styles.tableCell}>{item.email}</Text>
       <Text style={styles.tableCell}>{item.role}</Text>
       <View style={styles.tableCellActions}>
-        <TouchableOpacity onPress={() => deleteUser(item.uuid)}>  
+        <TouchableOpacity onPress={() => deleteUser(item.uuid)}>
           <Icon name="trash" size={20} color="red" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => updateUser(item.uuid, 'New Name')}>
+          <Icon name="edit" size={20} color="blue" />
         </TouchableOpacity>
       </View>
     </View>
@@ -112,7 +103,6 @@ const UserScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Users List:</Text>
-      
       <View style={styles.tableHeader}>
         <Text style={styles.tableHeaderCell}>UUID</Text>
         <Text style={styles.tableHeaderCell}>Name</Text>
@@ -120,14 +110,12 @@ const UserScreen: React.FC = () => {
         <Text style={styles.tableHeaderCell}>Role</Text>
         <Text style={styles.tableHeaderCell}>Actions</Text>
       </View>
-
       <FlatList
         data={users}
         keyExtractor={(item) => item.uuid.toString()}
         renderItem={renderUser}
         ListEmptyComponent={<Text>No users found</Text>}
       />
-
       <TextInput
         placeholder="Enter New User Name"
         value={newUserName}
@@ -139,7 +127,6 @@ const UserScreen: React.FC = () => {
   );
 };
 
-// Define styles
 const styles = StyleSheet.create({
   container: { padding: 20 },
   heading: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },

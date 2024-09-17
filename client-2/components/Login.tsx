@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native'; // React Navigation fo
 import { LoginUser, reset } from '../redux/authSlice'; // Adjust the import path as needed
 import { RootState } from '../redux/store'; // Import RootState from your store setup
 
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');

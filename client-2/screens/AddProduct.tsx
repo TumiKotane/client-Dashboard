@@ -1,46 +1,55 @@
-import React, { useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Alert } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux'; // Redux hooks for state management
-import { useNavigation, NavigationProp } from '@react-navigation/native'; // React Navigation for navigation
-import { getMe } from '../redux/authSlice'; // Redux slice for authentication
-import Layout from './Layout'; // Custom layout component
-import FormAddProduct from '../components/FormAddProduct'; // Form component for adding product
-import { RootState, AppDispatch } from '../redux/store'; // Import RootState and AppDispatch types from Redux store
+import React, { useState } from 'react';
+import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 const AddProduct: React.FC = () => {
-  const dispatch: AppDispatch = useDispatch(); // Dispatch typed with AppDispatch
-  const navigation = useNavigation<NavigationProp<any>>(); // Use navigation with proper typing from React Navigation
-  const { isError } = useSelector((state: RootState) => state.auth); // Get authentication error state from Redux
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const navigation = useNavigation();
 
-  // Fetch user authentication data
-  useEffect(() => {
-    dispatch(getMe()); // Dispatch getMe action to check authentication
-  }, [dispatch]);
-
-  // Handle authentication error, navigate to login if necessary
-  useEffect(() => {
-    if (isError) {
-      Alert.alert('Error', 'You are not authenticated. Redirecting to login.');
-      navigation.navigate('Login'); // Navigate to login screen if unauthenticated
+  const addProduct = async () => {
+    try {
+      await axios.post('http://192.168.100.6:5000/products', { name, price });
+      Alert.alert('Success', 'Product added successfully');
+      navigation.goBack(); // Navigate back to the product list
+    } catch (error) {
+      console.error('Failed to add product:', error);
+      Alert.alert('Error', 'Failed to add product');
     }
-  }, [isError, navigation]);
+  };
 
   return (
-    <Layout>
-      <ScrollView contentContainerStyle={styles.container}>
-        <FormAddProduct />
-      </ScrollView>
-    </Layout>
+    <View style={styles.container}>
+      <TextInput
+        placeholder="Product Name"
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Product Price"
+        value={price}
+        onChangeText={setPrice}
+        keyboardType="numeric"
+        style={styles.input}
+      />
+      <Button title="Add Product" onPress={addProduct} />
+    </View>
   );
 };
 
-export default AddProduct;
-
-// Define styles for the container
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    padding: 16,
-    backgroundColor: '#f5f5f5',
+    padding: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 5,
   },
 });
+
+export default AddProduct;

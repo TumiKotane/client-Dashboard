@@ -1,102 +1,106 @@
-// import React, { useEffect } from "react";
-// import Layout from "./Layout";
-// import ProductList from "../components/ProductList";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useNavigate } from "react-router-dom";
-// import { AppDispatch, RootState } from "../redux/store"; // Import your Redux types
-// import { getMe } from "../redux/authSlice";
-
-// // Define the shape of the auth state
-// interface AuthState {
-//   isError: boolean;
-// }
-
-// // Define the component
-// const Products: React.FC = () => {
-//   const dispatch = useDispatch<AppDispatch>(); // Use AppDispatch for dispatch
-//   const navigate = useNavigate();
-//   const { isError } = useSelector((state: RootState) => state.auth as AuthState);
-
-//   useEffect(() => {
-//     dispatch(getMe());
-//   }, [dispatch]);
-
-//   useEffect(() => {
-//     if (isError) {
-//       navigate("/");
-//     }
-//   }, [isError, navigate]);
-
-//   return (
-//     <Layout>
-//       <ProductList />
-//     </Layout>
-//   );
-// };
-
-// export default Products;
 import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, FlatList, Alert, Button, StyleSheet } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
-import { View, Text, Button, TouchableOpacity, FlatList } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // react-navigation for navigation
 
 interface User {
-  uuid: string;
   name: string;
-  email: string;
-  role: string;
 }
 
-const Userlist: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const navigation = useNavigation(); // For navigation
+interface Product {
+  uuid: string;
+  name: string;
+  price: string;
+  user: User;
+}
+
+const ProductList: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
-    getUsers();
+    getProducts();
   }, []);
 
-  const getUsers = async () => {
+  const getProducts = async () => {
     try {
-      const response = await axios.get<User[]>("http://192.168.100.6:5000/users");
-      setUsers(response.data);
+      const response = await axios.get<Product[]>("http://192.168.100.6:5000/products");
+      setProducts(response.data);
     } catch (error) {
-      console.error("Failed to fetch users", error);
+      console.error("Failed to fetch products:", error);
+      Alert.alert("Error", "Failed to fetch products");
     }
   };
 
-  const deleteUser = async (userId: string) => {
+  const deleteProduct = async (productId: string) => {
     try {
-      await axios.delete(`http://192.168.100.6:5000/users/${userId}`);
-      getUsers();
+      await axios.delete(`http://192.168.100.6:5000/products/${productId}`);
+      Alert.alert('Success', 'Product deleted successfully');
+      getProducts(); // Refresh product list
     } catch (error) {
-      console.error("Failed to delete user", error);
+      console.error('Failed to delete product:', error);
+      Alert.alert('Error', 'Failed to delete product');
     }
   };
+
+  const renderProduct = ({ item, index }: { item: Product; index: number }) => (
+    <View style={styles.productRow}>
+      <Text style={styles.text}>{index + 1}. {item.name}</Text>
+      <Text style={styles.text}>Price: {item.price}</Text>
+      <Text style={styles.text}>Created by: {item.user.name}</Text>
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.navigate('EditProduct', { productId: item.uuid })}
+        >
+          <Text style={styles.buttonText}>Edit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => deleteProduct(item.uuid)}
+        >
+          <Text style={styles.buttonText}>Delete</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
-    <View>
-      <Text style={{ fontSize: 24 }}>Users</Text>
-      <Text style={{ fontSize: 18 }}>List of Users</Text>
-      <Button title="Add New" onPress={() => navigation.navigate("AddUser")} />
+    <View style={styles.container}>
+      <Text style={styles.title}>Products</Text>
+      <Button title="Add New" onPress={() => navigation.navigate('AddProduct')} />
       <FlatList
-        data={users}
-        keyExtractor={(user) => user.uuid}
-        renderItem={({ item, index }) => (
-          <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 10 }}>
-            <Text>{index + 1}. {item.name}</Text>
-            <Text>{item.email}</Text>
-            <Text>{item.role}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("EditUser", { userId: item.uuid })}>
-              <Text style={{ color: "blue" }}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => deleteUser(item.uuid)}>
-              <Text style={{ color: "red" }}>Delete</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        data={products}
+        keyExtractor={(item) => item.uuid}
+        renderItem={renderProduct}
       />
     </View>
   );
 };
 
-export default Userlist;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  productRow: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 10,
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', marginTop: 10, }, editButton: { backgroundColor: 'blue', padding: 10, borderRadius: 5, }, deleteButton: { backgroundColor: 'red', padding: 10, borderRadius: 5, }, buttonText: { color: '#fff', fontWeight: 'bold', }, });
+
+export default ProductList;

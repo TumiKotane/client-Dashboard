@@ -21,7 +21,7 @@ const AddUser: React.FC = () => {
       navigation.navigate('Login'); // Navigate to the login page
     }
 
-    if (user && user.role !== 'admin') {
+    if (user && user.role !== 'Admin') {
       Alert.alert('Access Denied', 'Only admins can access this page. Redirecting to dashboard.');
       navigation.navigate('Dashboard'); // Redirect to dashboard if the user is not an admin
     }

@@ -3,6 +3,7 @@ import axios from 'axios';
 
 // Define types for the state
 interface User {
+    role: string;
     id: string;
     email: string;
     // Add other user properties if needed

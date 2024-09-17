@@ -1,32 +1,33 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity, Picker } from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native'; // React Navigation for mobile
+import { useNavigation } from '@react-navigation/native';
 
 const FormAddUser: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confPassword, setConfPassword] = useState<string>('');
-  const [role, setRole] = useState<string>('user'); // Default role as 'user'
+  const [role, setRole] = useState<string>('user');
   const [msg, setMsg] = useState<string>('');
 
   const navigation = useNavigation();
 
   const saveUser = async () => {
+    if (password !== confPassword) {
+      Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+
     try {
-      await axios.post('http://192.168.100.6:5000/users', {
-        name,
-        email,
-        password,
-        confPassword,
-        role,
-      });
+      await axios.post('http://192.168.100.6:5000/users', { name, email, password, role });
       Alert.alert('Success', 'User added successfully');
-      navigation.navigate('UserList'); // Navigate to the UsersList screen after saving
+      navigation.navigate('UserList');
     } catch (error: any) {
       if (error.response) {
         setMsg(error.response.data.msg);
+      } else {
+        Alert.alert('Error', 'Failed to add user.');
       }
     }
   };
@@ -34,9 +35,7 @@ const FormAddUser: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add New User</Text>
-
       {msg ? <Text style={styles.errorMessage}>{msg}</Text> : null}
-
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Name</Text>
         <TextInput
@@ -46,7 +45,6 @@ const FormAddUser: React.FC = () => {
           placeholder="Name"
         />
       </View>
-
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -54,9 +52,9 @@ const FormAddUser: React.FC = () => {
           value={email}
           onChangeText={setEmail}
           placeholder="Email"
+          keyboardType="email-address"
         />
       </View>
-
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Password</Text>
         <TextInput
@@ -67,7 +65,6 @@ const FormAddUser: React.FC = () => {
           secureTextEntry
         />
       </View>
-
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Confirm Password</Text>
         <TextInput
@@ -78,7 +75,6 @@ const FormAddUser: React.FC = () => {
           secureTextEntry
         />
       </View>
-
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Role</Text>
         <Picker
@@ -90,7 +86,6 @@ const FormAddUser: React.FC = () => {
           <Picker.Item label="User" value="user" />
         </Picker>
       </View>
-
       <TouchableOpacity style={styles.button} onPress={saveUser}>
         <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity>
@@ -99,55 +94,15 @@ const FormAddUser: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  input: {
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-  },
-  picker: {
-    height: 40,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
-  button: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  errorMessage: {
-    color: 'red',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
+  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  inputContainer: { marginBottom: 15 },
+  label: { fontSize: 16, marginBottom: 5 },
+  input: { height: 40, borderWidth: 1, borderColor: '#ccc', borderRadius: 5, paddingHorizontal: 10 },
+  picker: { height: 40, width: '100%', borderWidth: 1, borderColor: '#ccc', borderRadius: 5 },
+  button: { backgroundColor: '#4CAF50', paddingVertical: 10, borderRadius: 5, alignItems: 'center', marginTop: 20 },
+  buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  errorMessage: { color: 'red', marginBottom: 15, textAlign: 'center' },
 });
 
 export default FormAddUser;

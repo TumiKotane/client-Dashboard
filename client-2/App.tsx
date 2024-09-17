@@ -7,10 +7,9 @@ import LoginScreen from './screens/LoginScreen';
 import AddUser from './screens/AddUser';
 import Dashboard from './screens/Dashboard';
 import UserScreen from './screens/Users';
-//import AddProduct from './screens/AddProductScreen';
-
-// import AddUser from './screens/AddUser';
-//import Dashboard from './screens/Dashboard';
+import ProductScreen from './screens/ProductScreen';
+import AddProduct from './screens/AddProduct';
+import EditProduct from './screens/EditProduct';
 
 // Define types for navigation stack
 type RootStackParamList = {
@@ -20,6 +19,7 @@ type RootStackParamList = {
   UserList: undefined;
   Products: undefined;
   AddProduct: undefined;
+  EditProduct: undefined;
 };
 
 // Create the stack navigator with typed screens
@@ -34,8 +34,9 @@ export default function App(): JSX.Element {
           <Stack.Screen name="AddUser" component={AddUser} />
           <Stack.Screen name="UserList" component={UserScreen} />
           <Stack.Screen name="Dashboard" component={Dashboard} />
-          {/* <Stack.Screen name="Products" component={ProductScreen} />
-          <Stack.Screen name="AddProduct" component={AddProductScreen} /> */}
+          <Stack.Screen name="Products" component={ProductScreen} />
+          <Stack.Screen name="AddProduct" component={AddProduct} />
+          <Stack.Screen name="EditProduct" component={EditProduct} />
         </Stack.Navigator>
       </NavigationContainer>
       </Provider>

@@ -1,42 +1,71 @@
-import React, { useEffect } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native'; // React Native components
-import Layout from './Layout';
-import FormEditProduct from '../components/FormEditProduct';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native'; // React Navigation for navigation
-import { AppDispatch, RootState } from '../redux/store'; // Import types from your store
-import { getMe } from '../redux/authSlice';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import axios from 'axios';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const EditProduct: React.FC = () => {
-  const dispatch: AppDispatch = useDispatch();
-  const navigation = useNavigation(); // For navigation in React Native
-
-  const { isError } = useSelector((state: RootState) => state.auth);
-
-  useEffect(() => {
-    dispatch(getMe());
-  }, [dispatch]);
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { productId } = route.params as { productId: string };
 
   useEffect(() => {
-    if (isError) {
-      navigation.navigate('Home'); // Replace '/' with the name of your "Home" screen
+    fetchProductDetails();
+  }, []);
+
+  const fetchProductDetails = async () => {
+    try {
+      const response = await axios.get(`http://192.168.100.6:5000/products/${productId}`);
+      setName(response.data.name);
+      setPrice(response.data.price);
+    } catch (error) {
+      console.error('Failed to fetch product details:', error);
+      Alert.alert('Error', 'Failed to fetch product details');
     }
-  }, [isError, navigation]);
+  };
+
+  const updateProduct = async () => {
+    try {
+      await axios.patch(`http://192.168.100.6:5000/products/${productId}`, { name, price });
+      Alert.alert('Success', 'Product updated successfully');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Failed to update product:', error);
+      Alert.alert('Error', 'Failed to update product');
+    }
+  };
 
   return (
-    <Layout>
-      <ScrollView contentContainerStyle={styles.container}>
-        <FormEditProduct />
-      </ScrollView>
-    </Layout>
+    <View style={styles.container}>
+      <TextInput
+        placeholder="Product Name"
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Product Price"
+        value={price}
+        onChangeText={setPrice}
+        keyboardType="numeric"
+        style={styles.input}
+      />
+      <Button title="Update Product" onPress={updateProduct} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    padding: 16,
-    backgroundColor: '#f5f5f5', // Light background color
+    padding: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 5,
   },
 });
 
