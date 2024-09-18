@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Button, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Define the navigation type for React Navigation
 type RootStackParamList = {
   UserList: undefined;
   Dashboard: undefined;
   Products: undefined;
+  Login: undefined;
 };
 
 const SideBar: React.FC = () => {
@@ -25,7 +27,7 @@ const SideBar: React.FC = () => {
             }}
           />
         </View>
-        <View style={styles.buttonWrapper}>
+        {/* <View style={styles.buttonWrapper}>
           <Button
             title="Dashboard"
             onPress={() => {
@@ -33,13 +35,27 @@ const SideBar: React.FC = () => {
               navigation.navigate('Dashboard');
             }}
           />
-        </View>
+        </View> */}
         <View style={styles.buttonWrapper}>
           <Button
             title="Products"
             onPress={() => {
               console.log('Navigating to Products');
               navigation.navigate('Products');
+            }}
+          />
+        </View>
+        <View style={styles.buttonWrapper}>
+          <Button
+            title="Log Out"
+            onPress={() => {
+              console.log('You are logged out');
+              AsyncStorage.removeItem('userId');
+              AsyncStorage.removeItem('userEmail');
+              AsyncStorage.removeItem('userName');
+              AsyncStorage.removeItem('userRole');
+              AsyncStorage.removeItem('userUUID');
+              navigation.navigate('Login');
             }}
           />
         </View>

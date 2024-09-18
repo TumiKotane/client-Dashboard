@@ -1,6 +1,8 @@
 import React, { useState, FormEvent } from "react"; //convert to expo for mobile
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+// import SideBar from "../components/SideBar";
+// import NavBar from "../components/NavBar";
 
 const FormAddProduct: React.FC = () => { // React.FC is a generic type for functional components
   const [name, setName] = useState<string>("");
@@ -11,7 +13,7 @@ const FormAddProduct: React.FC = () => { // React.FC is a generic type for funct
   const saveProduct = async (e: FormEvent<HTMLFormElement>) => { 
     e.preventDefault();
     try {
-      await axios.post("http://192.168.100.6:5000/products", { //change to "localhost"
+      await axios.post("http://192.168.18.33:5000/products", { //change to "localhost"
         name: name,
         price: price,
       });

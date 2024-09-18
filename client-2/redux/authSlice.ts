@@ -53,7 +53,7 @@ export const loginUser = createAsyncThunk<User, LoginUserPayload, { rejectValue:
     'user/loginUser',
     async (user, thunkAPI) => {
         try {
-            const response = await axios.post('http://192.168.100.6:5000/login', {
+            const response = await axios.post('http://192.168.18.33:5000/login', {
                 email: user.email,
                 password: user.password,
             });
@@ -73,7 +73,7 @@ export const getMe = createAsyncThunk<User, void, { rejectValue: string }>(
     'user/getMe',
     async (_, thunkAPI) => {
         try {
-            const response = await axios.get('http://192.168.100.6:5000/me');
+            const response = await axios.get('http://192.168.18.33:5000/me');
             return response.data;
         } catch (error: any) {
             if (error.response) {

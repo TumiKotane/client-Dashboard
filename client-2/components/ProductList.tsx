@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList, Alert, Button, StyleSheet } from "react-native";
 import { useNavigation } from '@react-navigation/native'; // React Navigation
 import axios from "axios";
+import NavBar from "../components/NavBar";
+import SideBar from "../components/SideBar";
 
 
 // Define types for your product and user
@@ -26,7 +28,7 @@ const ProductList: React.FC = () => {
 
   const getProducts = async () => {
     try {
-      const response = await axios.get<Product[]>("http://192.168.100.6:5000/products"); // Update with your server IP/endpoint
+      const response = await axios.get<Product[]>("http://192.168.18.33:5000/products"); // Update with your server IP/endpoint
       setProducts(response.data);
     } catch (error) {
       console.error("Failed to fetch products:", error);
@@ -58,6 +60,8 @@ const ProductList: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <NavBar />
+      <SideBar />
       <Text style={styles.title}>Products</Text>
       <Button title="Add New" onPress={() => navigation.navigate('AddProduct')} />
       <FlatList

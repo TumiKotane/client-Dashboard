@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import NavBar from '../components/NavBar';
+import SideBar from '../components/SideBar';
 
 const EditProduct: React.FC = () => {
   const [name, setName] = useState('');
@@ -16,7 +18,7 @@ const EditProduct: React.FC = () => {
 
   const fetchProductDetails = async () => {
     try {
-      const response = await axios.get(`http://192.168.100.6:5000/products/${productId}`);
+      const response = await axios.get(`http://192.168.18.33:5000/products/${productId}`);
       setName(response.data.name);
       setPrice(response.data.price);
     } catch (error) {
@@ -27,7 +29,7 @@ const EditProduct: React.FC = () => {
 
   const updateProduct = async () => {
     try {
-      await axios.patch(`http://192.168.100.6:5000/products/${productId}`, { name, price });
+      await axios.patch(`http://192.168.18.33:5000/products/${productId}`, { name, price });
       Alert.alert('Success', 'Product updated successfully');
       navigation.goBack();
     } catch (error) {
@@ -38,6 +40,8 @@ const EditProduct: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      {/* <NavBar />
+      <SideBar /> */}
       <TextInput
         placeholder="Product Name"
         value={name}

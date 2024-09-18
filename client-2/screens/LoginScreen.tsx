@@ -535,17 +535,12 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
     try {
       setLoading(true);
-      const response = await axios.post('http://192.168.100.6:5000/login', {
-        email,
-        password,
-        withCredentials: true,
-      });
-      console.log(Request);
-      console.log(response);
+      const response = await axios.post('http://192.168.18.33:5000/login', {email,password}, {withCredentials: true});
+      // console.log(response);
       console.log(response.data);
       if (response.data.uuid) {
         console.log('Login Successful...................');
-        // await AsyncStorage.setItem('userId', response.data.id);
+        await AsyncStorage.setItem('userId', response.data.id).toString();
         await AsyncStorage.setItem('userEmail', response.data.email);
         await AsyncStorage.setItem('userName', response.data.name);
         await AsyncStorage.setItem('userRole', response.data.role);

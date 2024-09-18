@@ -14,12 +14,12 @@ const AddUser: React.FC = () => {
 
   // Fetch user data and check authentication
   useEffect(() => {
-    dispatch(getMe()); // Fetch current user authentication status
+    // dispatch(getMe()); // Fetch current user authentication status
 
-    if (isError) {
-      Alert.alert('Error', 'Authentication failed. Redirecting to login.');
-      navigation.navigate('Login'); // Navigate to the login page
-    }
+    // if (isError) {
+    //   Alert.alert('Error', 'Authentication failed. Redirecting to login.');
+    //   navigation.navigate('Login'); // Navigate to the login page
+    // }
 
     if (user && user.role !== 'Admin') {
       Alert.alert('Access Denied', 'Only admins can access this page. Redirecting to dashboard.');
@@ -28,11 +28,11 @@ const AddUser: React.FC = () => {
   }, [isError, user, navigation, dispatch]);
 
   return (
-    <Layout>
+    // <Layout>
       <ScrollView contentContainerStyle={styles.container}>
         <FormAddUser />
       </ScrollView>
-    </Layout>
+    // </Layout>
   );
 };
 

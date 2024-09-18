@@ -19,7 +19,7 @@ const FormEditUser: React.FC = () => {
     const getUserById = async () => {
       if (id) {
         try {
-          const response = await axios.get(`http://192.168.100.6:5000/users/${id}`);
+          const response = await axios.get(`http://192.168.18.33:5000/users/${id}`);
           setName(response.data.name);
           setEmail(response.data.email);
           setRole(response.data.role);
@@ -42,7 +42,7 @@ const FormEditUser: React.FC = () => {
     }
     if (id) {
       try {
-        await axios.patch(`http://192.168.100.6:5000/users/${id}`, { name, email, password, role });
+        await axios.patch(`http://192.168.18.33:5000/users/${id}`, { name, email, password, role });
         navigation.navigate('UserList');
       } catch (error: any) {
         if (error.response) {

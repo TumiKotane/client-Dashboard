@@ -2,6 +2,12 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList, Alert, Button, StyleSheet } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
+// import NavBar from "../components/NavBar";
+// import SideBar from "../components/SideBar";
+
+type RootStackParamList = {
+  AddProduct: undefined;
+};
 
 interface User {
   name: string;
@@ -22,10 +28,17 @@ const ProductList: React.FC = () => {
     getProducts();
   }, []);
 
+  // Axios instance to include credentials (cookies) automatically
+  const api = axios.create({
+    baseURL: 'http://192.168.18.33:5000', // your server address
+    withCredentials: true, // Make sure credentials are sent with the request
+  });
+
   const getProducts = async () => {
     try {
-      const response = await axios.get<Product[]>("http://192.168.100.6:5000/products");
+      const response = await api.get<Product[]>('/products');
       setProducts(response.data);
+      console.log('Products:', response.data);
     } catch (error) {
       console.error("Failed to fetch products:", error);
       Alert.alert("Error", "Failed to fetch products");
@@ -34,7 +47,7 @@ const ProductList: React.FC = () => {
 
   const deleteProduct = async (productId: string) => {
     try {
-      await axios.delete(`http://192.168.100.6:5000/products/${productId}`);
+      await api.delete(`/products/${productId}`);
       Alert.alert('Success', 'Product deleted successfully');
       getProducts(); // Refresh product list
     } catch (error) {
@@ -67,6 +80,8 @@ const ProductList: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      {/* <NavBar />
+      <SideBar /> */}
       <Text style={styles.title}>Products</Text>
       <Button title="Add New" onPress={() => navigation.navigate('AddProduct')} />
       <FlatList
@@ -101,6 +116,23 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    justifyContent: 'space-between', marginTop: 10, }, editButton: { backgroundColor: 'blue', padding: 10, borderRadius: 5, }, deleteButton: { backgroundColor: 'red', padding: 10, borderRadius: 5, }, buttonText: { color: '#fff', fontWeight: 'bold', }, });
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  editButton: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+});
 
 export default ProductList;

@@ -3,9 +3,11 @@ import User from "../models/UserModel.js";
 import {Op} from "sequelize";
 
 export const getProducts = async (req, res) =>{
+    console.log(req.role);
     try {
         let response;
-        if(req.role === "admin"){
+        if(req.role === "Admin"){
+            console.log("Admin is trying to get all products");
             response = await Product.findAll({
                 attributes:['uuid','name','price'],
                 include:[{
@@ -40,7 +42,7 @@ export const getProductById = async(req, res) =>{
         });
         if(!product) return res.status(404).json({msg: "Data not found"});
         let response;
-        if(req.role === "admin"){
+        if(req.role === "Admin"){
             response = await Product.findOne({
                 attributes:['uuid','name','price'],
                 where:{
@@ -71,15 +73,18 @@ export const getProductById = async(req, res) =>{
 
 export const createProduct = async(req, res) =>{
     const {name, price} = req.body;
+    console.log('UserId =>' + req.id);
     try {
         await Product.create({
             name: name,
             price: price,
-            userId: req.userId
+            userId: req.id
         });
         res.status(201).json({msg: "Product Created Successfuly"});
     } catch (error) {
+        // console.log("Error is coming from here");
         res.status(500).json({msg: error.message});
+        // console.log(error.message);
     }
 }
 
@@ -92,7 +97,7 @@ export const updateProduct = async(req, res) =>{
         });
         if(!product) return res.status(404).json({msg: "Data not found"});
         const {name, price} = req.body;
-        if(req.role === "admin"){
+        if(req.role === "Admin"){
             await Product.update({name, price},{
                 where:{
                     id: product.id
@@ -121,7 +126,7 @@ export const deleteProduct = async(req, res) =>{
         });
         if(!product) return res.status(404).json({msg: "Data not found"});
         const {name, price} = req.body;
-        if(req.role === "admin"){
+        if(req.role === "Admin"){
             await Product.destroy({
                 where:{
                     id: product.id

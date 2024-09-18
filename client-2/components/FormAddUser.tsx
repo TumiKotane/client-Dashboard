@@ -13,6 +13,11 @@ const FormAddUser: React.FC = () => {
 
   const navigation = useNavigation();
 
+  const api = axios.create({
+    baseURL: 'http://192.168.18.33:5000', // your server address
+    withCredentials: true, // Make sure credentials are sent with the request
+  });
+
   const saveUser = async () => {
     if (password !== confPassword) {
       Alert.alert('Error', 'Passwords do not match.');
@@ -20,8 +25,9 @@ const FormAddUser: React.FC = () => {
     }
 
     try {
-      await axios.post('http://192.168.100.6:5000/users', { name, email, password, role });
+      // await api.post('http://192.168.18.33:5000/users', { name, email, password, role });
       Alert.alert('Success', 'User added successfully');
+      console.log('User added successfully');
       navigation.navigate('UserList');
     } catch (error: any) {
       if (error.response) {

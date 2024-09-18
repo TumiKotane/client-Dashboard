@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native'; // React Navigation for mobile
+import NavBar from '../components/NavBar';
+import SideBar from '../components/SideBar';
 
 // Define an interface for product data
 interface Product {
@@ -22,7 +24,7 @@ const FormEditProduct: React.FC = () => {
     const getProductById = async () => {
       if (id) {
         try {
-          const response = await axios.get<Product>(`http://192.168.100.6:5000/products/${id}`); // Update URL if necessary
+          const response = await axios.get<Product>(`http://192.168.18.33:5000/products/${id}`); // Update URL if necessary
           setName(response.data.name);
           setPrice(response.data.price);
         } catch (error: any) {
@@ -38,7 +40,7 @@ const FormEditProduct: React.FC = () => {
   const updateProduct = async () => {
     if (id) {
       try {
-        await axios.patch(`http://192.168.100.6:5000/products/${id}`, {
+        await axios.patch(`http://192.168.18.33:5000/products/${id}`, {
           name,
           price,
         });
@@ -75,8 +77,7 @@ const FormEditProduct: React.FC = () => {
           placeholder="Price"
           keyboardType="numeric"
         />
-      </View>
-
+      </View> ///////add side bar and navbar in the line below
       <TouchableOpacity style={styles.button} onPress={updateProduct}>
         <Text style={styles.buttonText}>Update</Text>
       </TouchableOpacity>
